@@ -2,7 +2,7 @@
 <?php
 include_once ('configPDO.php') ;
 
-$dbb = new db("root","","localhost","nexity", array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+$dbb = new db("root2","dieumerci1234","localhost","nexity", array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
 
 function dateFR($date){
     setlocale (LC_TIME, 'fr_FR.utf8','fra');

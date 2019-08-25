@@ -1,7 +1,7 @@
 <?php 	
 $localhost ="localhost";
-$username = "root";
-$password = "";
+$username = "root2";
+$password = "dieumerci1234";
 $dbname = "nexity";
 
 // db connection

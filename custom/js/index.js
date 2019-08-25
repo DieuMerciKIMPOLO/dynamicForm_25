@@ -4,37 +4,54 @@ var errors = {
 var form_data = []
 const getTotals = (classe) => {
     let total = 0;
-    form_data.map((item) => {
-        if (item.classe === classe) {
-            return total += item.value
-        }
+    form_data.filter(obj=>obj.classe_id===classe.id).map((item) => {
+        // console.log("Total####",item);
+        total += item.value
     });
+    // console.log("Total",classe,"#######",form_data.filter(obj=>obj.classe_id===classe.classe_id));
     return total
 }
 const getErros = (item) => {
 
-    return getTotals(item.classe) < parseInt(item.minimum) ? `Au moins 1 qauntité doit être ajouté à la famille ${item.classe} ` : ``
+    return getTotals(item) < parseInt(item.minimum) ? `Au moins 1 qauntité doit être ajouté à la famille ${item.classe} ` : ``
 }
-const handleChange = (classe, produit, value, minimum) => {
-
-    form_data = [...form_data.filter(obj => obj.classe !== classe || obj.produit !== produit), {
-            classe: classe,
-            produit: produit,
-            value: isNaN(parseInt(value)) ? 0 : parseInt(value),
-            minimum: isNaN(parseInt(minimum)) ? 0 : parseInt(minimum)
-        }]
-        //$(`#${classe}`).html(getErros({classe:classe, produit:produit, minimum:parseInt(minimum)}))
-    console.log(form_data)
+const handleChange = (classe, produit, valeur, minimum) => {
+    // handleChange(this.name,this.id,this.value,this.type)
+    console.log("##### FORMAT ERROR",produit)
+    let dt=JSON.parse(produit);
+    setTimeout(
+        ()=>{
+            console.log(valeur)
+            form_data = [...form_data.filter(obj => obj.key !== dt.key), {
+                    classe: classe,
+                    key:dt.key,
+                    classe_id:dt.id,
+                    produit_id:dt.produit.id,
+                    produit: dt.produit.nom,
+                    value:Number($(".quantity" + dt.produit.id).val()),
+                    minimum:dt.minimum
+                }]
+            console.log(form_data)          
+        },300
+    )
 }
 
 const handleSubmit = () => {
-    //$(`#Sumsung3`).html(getErros({classe:"Sumsung3", produit:'produit', minimum:parseInt(12)}))
-    //e.preventDefault();
     const data = JSON.parse(localStorage.getItem('data'));
     console.log(data);
+    let error=false;
     data.map((item) => {
-        $(`#${item.classe}`).html(getErros(item))
+        if(getTotals(item) < parseInt(item.minimum)){
+            error=true
+            console.log("Error true",item,"######",getTotals(item) < parseInt(item.minimum))
+        }
+        $(`#${item.id}`).html(getErros(item))
     })
+    if(error===true){
+        console.log("False submission",form_data);
+    }else{
+        console.log('True Okay!!!')
+    }
 }
 
 $(document).ready(function() {
@@ -104,7 +121,12 @@ $(document).ready(function() {
             
             <td style="padding-left:20px;"> 
             <div class="form-group">
-            <input type=${item.minimum} name=${item.classe} name="quantity[]" id=${elt.nom}   onkeydown="handleChange(this.name,this.id,this.value,this.type)"  onkeyup ="getTotal(${elt.id})"  class="form-control quantity${elt.id}"  aria-describedby="helpId">
+            <input type='number' name=${item.classe} name="quantity[]" value=''
+                        id=${JSON.stringify({classe:item.classe.split(' ').join('_'),key:`${item.id}_${elt.id}`,id:item.id,minimum:parseInt(item.minimum),produit:elt})}   
+                        onkeyup="handleChange(this.name,this.id,this.value,this.type)"  
+                        onchange ="getTotal(${elt.id})"  
+                        class="form-control quantity${elt.id}"  aria-describedby="helpId">
+            
             </div>
             </td>
             <td>			  					
@@ -118,7 +140,7 @@ $(document).ready(function() {
         })
         sect_1 += `</tbody></table>
         <div class="text-center">
-           <small id=${item.classe} style="color:red;font-size:16;text-align:center;" class="text-muted"></small> 
+           <small id=${item.id} style="color:red;font-size:16;text-align:center;" class="text-muted"></small> 
         </div>
         </div>
         </div>

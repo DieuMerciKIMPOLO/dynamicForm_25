@@ -1,4 +1,6 @@
 <?php 
+ini_set('display_errors', 'On');
+error_reporting(E_ALL);
 ob_start();
 session_start();
 require_once 'php_action/bdd/init.php';
